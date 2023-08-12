@@ -417,7 +417,6 @@ ucc_status_t ucc_team_create_test_single(ucc_context_t *context,
 
     switch (team->state) {
     case UCC_TEAM_ADDR_EXCHANGE:
-        printf("***UCC_TEAM_ADDR_EXCHANGE***\n");
         status = ucc_team_exchange(context, team);
         if (UCC_OK != status) {
             goto out;
@@ -441,7 +440,6 @@ ucc_status_t ucc_team_create_test_single(ucc_context_t *context,
         team->state = UCC_TEAM_ALLOC_ID;
         /* fall through */
     case UCC_TEAM_ALLOC_ID:
-        printf("***UCC_TEAM_ALLOC_ID***\n");
         if (context->cl_flags & UCC_BASE_LIB_FLAG_TEAM_ID_REQUIRED) {
             status = ucc_team_alloc_id(team);
             if (UCC_OK != status) {
@@ -457,11 +455,9 @@ ucc_status_t ucc_team_create_test_single(ucc_context_t *context,
         }
         /* fall through */
     case UCC_TEAM_CL_CREATE:
-        printf("***UCC_TEAM_CL_CREATE***\n");
         status = ucc_team_create_cls(context, team);
         break;
     case UCC_TEAM_ACTIVE:
-        printf("***UCC_TEAM_ACTIVE***\n");
         return UCC_OK;
     }
 out:
