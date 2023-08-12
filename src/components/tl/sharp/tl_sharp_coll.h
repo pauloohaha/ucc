@@ -5,8 +5,8 @@
  */
  /*
  TODO:
- ucc_tl_rccl_reduce_scatter_init
- 
+ ucc_tl_rccl_reduce_scatter_init added at line 26 by piao
+
  */
 
 #ifndef UCC_TL_SHARP_COLL_H_
@@ -22,6 +22,8 @@ extern enum sharp_datatype ucc_to_sharp_dtype[];
 ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task);
 
 ucc_status_t ucc_tl_sharp_barrier_init(ucc_tl_sharp_task_t *task);
+
+ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task);
 
 ucc_status_t ucc_tl_sharp_bcast_init(ucc_tl_sharp_task_t *task);
 
