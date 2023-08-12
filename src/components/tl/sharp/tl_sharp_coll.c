@@ -13,6 +13,7 @@
 #include "tl_sharp_coll.h"
 #include "components/mc/ucc_mc.h"
 #include "core/ucc_ee.h"
+#include "core/ucc_team.h"
 #include "utils/ucc_math.h"
 #include "utils/ucc_coll_utils.h"
 #include <sharp/api/version.h>
@@ -314,7 +315,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     reduce_spec.rbuf_desc.type              = SHARP_DATA_BUFFER;
     reduce_spec.rbuf_desc.mem_type          = ucc_to_sharp_memtype[args->dst.info.mem_type];
     reduce_spec.aggr_mode                   = SHARP_AGGREGATION_NONE;
-    reduce_spec.length                      = (count/size)*rank;//reducce scatter 0
+    reduce_spec.length                      = count;//reducce scatter 0
     reduce_spec.dtype                       = sharp_type;
     reduce_spec.op                          = op_type;
 
