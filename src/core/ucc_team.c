@@ -467,7 +467,7 @@ out:
     }
 
     if (UCC_OK == status &&
-        ucc_global_config.log_component.log_level >= UCC_LOG_LEVEL_INFO &&
+        //ucc_global_config.log_component.log_level >= UCC_LOG_LEVEL_INFO &&
         team->rank == 0) {
         ucc_info("===== COLL_SCORE_MAP (team_id %d, size %u) =====",
                  team->id, team->size);
