@@ -282,7 +282,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     int                           ret;
 
     //int              rank = (int)(coll_task->bargs.team->rank);
-    int              size = (int)(coll_task->bargs.team->size);
+    //int              size = (int)(coll_task->bargs.team->size);
 
 
     UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task, "sharp_reduce_scatter_start", 0); // Not sure
