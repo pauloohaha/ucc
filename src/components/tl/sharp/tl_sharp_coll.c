@@ -399,7 +399,7 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
 {
-    printf("sharp_reduce_scatter_init\n");
+    fprintf(stderr, "*********** sharp_reduce_scatter_init ************\n");
     ucc_coll_args_t *args = &TASK_ARGS(task);
 
     if (!ucc_coll_args_is_predefined_dt(args, UCC_RANK_INVALID)) {
