@@ -21,6 +21,8 @@ extern enum sharp_datatype ucc_to_sharp_dtype[];
 
 ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task);
 
+ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_tl_sharp_task_t *task);
+
 ucc_status_t ucc_tl_sharp_barrier_init(ucc_tl_sharp_task_t *task);
 
 ucc_status_t ucc_tl_sharp_bcast_init(ucc_tl_sharp_task_t *task);
