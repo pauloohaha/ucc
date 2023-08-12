@@ -81,9 +81,8 @@ coll_score_add_range(ucc_coll_score_t *score, ucc_coll_type_t coll_type,
         return UCC_ERR_INVALID_PARAM;
     }
 
-    if(team->context->ucc_context->rank == 0){
-        ucc_info("***score add: team:%s, score:%d\n, mtype:%d, coll type:%d",team->context->lib->log_component.name, msg_score, mem_type, coll_type);
-    }
+    ucc_info("***score add: team:%s, score:%d\n, mtype:%d, coll type:%d",team->context->lib->log_component.name, msg_score, mem_type, coll_type);
+
     return UCC_OK;
 }
 ucc_status_t ucc_coll_score_add_range(ucc_coll_score_t *score,
