@@ -268,8 +268,7 @@ ucc_status_t ucc_tl_sharp_allreduce_start(ucc_coll_task_t *coll_task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
 {   
-
-    printf("*********** sharp_reduce_scatter_start ************\n");
+    fprintf(stderr, "*********** sharp_reduce_scatter_start ************\n");
     ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_tl_sharp_team_t          *team  = TASK_TEAM(task);
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
