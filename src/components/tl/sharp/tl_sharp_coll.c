@@ -281,10 +281,10 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     size_t                        data_size;
     int                           ret;
 
-    int              rank = (int)(coll_task->bargs.team->rank);
-    int              size = (int)(coll_task->bargs.team->size);
+    //int              rank = (int)(coll_task->bargs.team->rank);
+    //int              size = (int)(coll_task->bargs.team->size);
 
-    UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task, "sharp_allreduce_start", 0); // Not sure
+    UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task, "sharp_reduce_scatter_start", 0); // Not sure
 
     sharp_type = ucc_to_sharp_dtype[UCC_DT_PREDEFINED_ID(dt)];
     op_type    = ucc_to_sharp_reduce_op[args->op];
@@ -317,6 +317,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     reduce_spec.aggr_mode                   = SHARP_AGGREGATION_NONE;
     reduce_spec.length                      = count;//reducce scatter 0
     reduce_spec.dtype                       = sharp_type;
+    reduce_spec.root                        = 0;
     reduce_spec.op                          = op_type;
 
     ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle); // TODO: change it to reduce_scatter
