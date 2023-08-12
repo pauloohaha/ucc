@@ -55,7 +55,7 @@ static inline size_t ucc_contig_dt_size(ucc_datatype_t datatype)
 extern size_t ucc_dt_predefined_sizes[UCC_DT_PREDEFINED_LAST];
 
 static inline size_t ucc_dt_size(ucc_datatype_t dt)
-{
+{   // 
     if (UCC_DT_IS_PREDEFINED(dt)) {
         return ucc_dt_predefined_sizes[UCC_DT_PREDEFINED_ID(dt)];
     } else if (UCC_DT_IS_CONTIG(dt)) {

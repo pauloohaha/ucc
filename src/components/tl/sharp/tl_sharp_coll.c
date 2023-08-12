@@ -266,6 +266,67 @@ ucc_status_t ucc_tl_sharp_allreduce_start(ucc_coll_task_t *coll_task)
     return ucc_progress_queue_enqueue(UCC_TL_CORE_CTX(team)->pq, &task->super);
 }
 
+ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
+{
+    ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
+    ucc_tl_sharp_team_t          *team  = TASK_TEAM(task);
+    ucc_coll_args_t              *args  = &TASK_ARGS(task);
+    size_t                        count = args->dst.info.count;
+    ucc_datatype_t                dt    = args->dst.info.datatype;
+    struct sharp_coll_reduce_spec reduce_spec;
+    enum sharp_datatype           sharp_type;
+    enum sharp_reduce_op          op_type;
+    size_t                        data_size;
+    int                           ret;
+
+    UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task, "sharp_allreduce_start", 0); // Not sure
+
+    sharp_type = ucc_to_sharp_dtype[UCC_DT_PREDEFINED_ID(dt)];
+    op_type    = ucc_to_sharp_reduce_op[args->op];
+    data_size  = ucc_dt_size(dt) * count;
+
+    if (!UCC_IS_INPLACE(*args)) {
+        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->src.info.buffer,data_size,
+                                  &task->allreduce.s_mem_h);
+    }
+    ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->dst.info.buffer, data_size,
+                              &task->allreduce.r_mem_h);
+
+    if (!UCC_IS_INPLACE(*args)) {
+        reduce_spec.sbuf_desc.buffer.ptr        = args->src.info.buffer;
+        reduce_spec.sbuf_desc.buffer.mem_handle = task->allreduce.s_mem_h->mr;
+        reduce_spec.sbuf_desc.mem_type          = ucc_to_sharp_memtype[args->src.info.mem_type];
+    } else {
+        reduce_spec.sbuf_desc.buffer.ptr        = args->dst.info.buffer;
+        reduce_spec.sbuf_desc.buffer.mem_handle = task->allreduce.r_mem_h->mr;
+        reduce_spec.sbuf_desc.mem_type          = ucc_to_sharp_memtype[args->dst.info.mem_type];
+    }
+
+    reduce_spec.sbuf_desc.buffer.length     = data_size;
+    reduce_spec.sbuf_desc.type              = SHARP_DATA_BUFFER;
+    reduce_spec.rbuf_desc.buffer.ptr        = args->dst.info.buffer;
+    reduce_spec.rbuf_desc.buffer.length     = data_size;
+    reduce_spec.rbuf_desc.buffer.mem_handle = task->allreduce.r_mem_h->mr;
+    reduce_spec.rbuf_desc.type              = SHARP_DATA_BUFFER;
+    reduce_spec.rbuf_desc.mem_type          = ucc_to_sharp_memtype[args->dst.info.mem_type];
+    reduce_spec.aggr_mode                   = SHARP_AGGREGATION_NONE;
+    reduce_spec.length                      = count;
+    reduce_spec.dtype                       = sharp_type;
+    reduce_spec.op                          = op_type;
+
+    ret = sharp_coll_do_allreduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle); // TODO: change it to reduce_scatter
+
+    if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
+        tl_error(UCC_TASK_LIB(task), "sharp_coll_do_allreduce_nb failed:%s",
+                 sharp_coll_strerror(ret));
+        coll_task->status = ucc_tl_sharp_status_to_ucc(ret);
+        return ucc_task_complete(coll_task);
+    }
+    coll_task->status = UCC_INPROGRESS;
+
+    return ucc_progress_queue_enqueue(UCC_TL_CORE_CTX(team)->pq, &task->super);
+}
+
 ucc_status_t ucc_tl_sharp_bcast_start(ucc_coll_task_t *coll_task)
 {
     ucc_tl_sharp_task_t *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
