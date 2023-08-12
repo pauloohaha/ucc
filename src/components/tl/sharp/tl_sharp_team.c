@@ -5,7 +5,7 @@
  */
 
  /*
- TODO: add case UCC_COLL_TYPE_REDUCE_SCATTER at ucc_tl_sharp_coll_init
+add case UCC_COLL_TYPE_REDUCE_SCATTER at ucc_tl_sharp_coll_init at line 242 by piao
  */
 
 #include "tl_sharp_coll.h"
@@ -237,6 +237,9 @@ ucc_status_t ucc_tl_sharp_coll_init(ucc_base_coll_args_t *coll_args,
         break;
     case UCC_COLL_TYPE_BCAST:
         status = ucc_tl_sharp_bcast_init(task);
+        break;
+    case UCC_COLL_TYPE_REDUCE_SCATTER:
+        status = ucc_tl_sharp_reduce_scatter_init(task);
         break;
     default:
         tl_debug(UCC_TASK_LIB(task),
