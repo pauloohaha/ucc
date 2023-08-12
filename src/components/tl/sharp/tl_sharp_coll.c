@@ -321,10 +321,10 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     reduce_spec.root                        = 0;
     reduce_spec.op                          = op_type;
 
-    ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle); // TODO: change it to reduce_scatter
+    ret = sharp_coll_do_allreduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle); // TODO: change it to reduce_scatter
 
     if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
-        tl_error(UCC_TASK_LIB(task), "sharp_coll_do_allreduce_nb failed:%s",
+        tl_error(UCC_TASK_LIB(task), "reduce scatter failed:%s",
                  sharp_coll_strerror(ret));
         coll_task->status = ucc_tl_sharp_status_to_ucc(ret);
         return ucc_task_complete(coll_task);
