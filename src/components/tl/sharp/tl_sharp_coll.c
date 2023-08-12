@@ -5,7 +5,7 @@
  */
  /*
  TODO:
- ucc_tl_rccl_reduce_scatter_start
+ ucc_tl_rccl_reduce_scatter_start: 没有改动内容
  ucc_tl_rccl_reduce_scatter_init
  
  */
@@ -267,7 +267,9 @@ ucc_status_t ucc_tl_sharp_allreduce_start(ucc_coll_task_t *coll_task)
 }
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
-{
+{   
+
+    printf("*********** sharp_reduce_scatter_start ************\n");
     ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_tl_sharp_team_t          *team  = TASK_TEAM(task);
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
@@ -395,6 +397,29 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task)
     task->super.progress = ucc_tl_sharp_collective_progress;
     return UCC_OK;
 }
+
+ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
+{
+    printf("sharp_reduce_scatter_init\n");
+    ucc_coll_args_t *args = &TASK_ARGS(task);
+
+    if (!ucc_coll_args_is_predefined_dt(args, UCC_RANK_INVALID)) {
+        return UCC_ERR_NOT_SUPPORTED;
+    }
+
+    if ((!UCC_IS_INPLACE(*args) &&
+         ucc_to_sharp_memtype[args->src.info.mem_type] == SHARP_MEM_TYPE_LAST) ||
+        ucc_to_sharp_memtype[args->dst.info.mem_type] == SHARP_MEM_TYPE_LAST ||
+        ucc_to_sharp_dtype[UCC_DT_PREDEFINED_ID(args->dst.info.datatype)] == SHARP_DTYPE_NULL ||
+        ucc_to_sharp_reduce_op[args->op] == SHARP_OP_NULL) {
+        return UCC_ERR_NOT_SUPPORTED;
+    }
+
+    task->super.post     = ucc_tl_sharp_reduce_scatter_start;
+    task->super.progress = ucc_tl_sharp_collective_progress;
+    return UCC_OK;
+}
+
 
 ucc_status_t ucc_tl_sharp_bcast_init(ucc_tl_sharp_task_t *task)
 {

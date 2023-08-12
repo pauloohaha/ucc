@@ -5,7 +5,7 @@
  */
  /*
  TODO:
- ucc_tl_rccl_reduce_scatter_init added at line 26 by piao
+ ucc_tl_rccl_reduce_scatter_init added at line 26 by piao; start by yufan
 
  */
 
