@@ -20,7 +20,7 @@
 #include <limits.h>
 
 #ifndef UCC_TL_SHARP_DEFAULT_SCORE
-#define UCC_TL_SHARP_DEFAULT_SCORE 30
+#define UCC_TL_SHARP_DEFAULT_SCORE 100
 #endif
 
 #ifdef HAVE_PROFILING_TL_SHARP
