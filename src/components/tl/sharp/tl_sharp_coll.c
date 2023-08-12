@@ -3,6 +3,12 @@
  *
  * See file LICENSE for terms.
  */
+ /*
+ TODO:
+ ucc_tl_rccl_reduce_scatter_start
+ ucc_tl_rccl_reduce_scatter_init
+ 
+ */
 
 #include "tl_sharp_coll.h"
 #include "components/mc/ucc_mc.h"

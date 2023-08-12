@@ -3,6 +3,11 @@
  *
  * See file LICENSE for terms.
  */
+ /*
+ TODO:
+ ucc_tl_rccl_reduce_scatter_init
+ 
+ */
 
 #ifndef UCC_TL_SHARP_COLL_H_
 #define UCC_TL_SHARP_COLL_H_
