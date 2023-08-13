@@ -4,12 +4,9 @@
  * See file LICENSE for terms.
  */
  /*
- ucc_tl_sharp_reduce_scatter_start
- ucc_tl_sharp_reduce_scatter_init
-
- change to
-  ucc_tl_sharp_reduce_scatterv_start
- ucc_tl_sharp_reduce_scatterv_init
+ TODO:
+ ucc_tl_rccl_reduce_scatter_start: 没有改动内容
+ ucc_tl_rccl_reduce_scatter_init
  
  */
 
@@ -270,7 +267,7 @@ ucc_status_t ucc_tl_sharp_allreduce_start(ucc_coll_task_t *coll_task)
     return ucc_progress_queue_enqueue(UCC_TL_CORE_CTX(team)->pq, &task->super);
 }
 
-ucc_status_t ucc_tl_sharp_reduce_scatterv_start(ucc_coll_task_t *coll_task)
+ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
 {   
     fprintf(stderr, "*********** sharp_reduce_scatter_start ************\n");
     ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
@@ -406,9 +403,9 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task)
     return UCC_OK;
 }
 
-ucc_status_t ucc_tl_sharp_reduce_scatterv_init(ucc_tl_sharp_task_t *task)
+ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
 {
-    fprintf(stderr, "*********** sharp_reduce_scatterv_init ************\n");
+    fprintf(stderr, "*********** sharp_reduce_scatter_init ************\n");
     ucc_coll_args_t *args = &TASK_ARGS(task);
 
     if (!ucc_coll_args_is_predefined_dt(args, UCC_RANK_INVALID)) {
@@ -423,7 +420,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatterv_init(ucc_tl_sharp_task_t *task)
         return UCC_ERR_NOT_SUPPORTED;
     }
 
-    task->super.post     = ucc_tl_sharp_reduce_scatterv_start;
+    task->super.post     = ucc_tl_sharp_reduce_scatter_start;
     task->super.progress = ucc_tl_sharp_collective_progress;
     return UCC_OK;
 }
