@@ -326,7 +326,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
 
 
     ucc_info("***reduce datalen:%lu, ranksize:%d\n", reduce_spec.length, size);
-    ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec); // TODO: change it to reduce_scatter
+    ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle); // TODO: change it to reduce_scatter
 
     if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
         tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCE failed:%s",
