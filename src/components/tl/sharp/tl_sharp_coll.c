@@ -339,7 +339,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatterv_start(ucc_coll_task_t *coll_task)
 {   
-    ucc_trace(stderr, "*********** sharp_reduce_scatterV_start ************\n");
+    ucc_trace("*********** sharp_reduce_scatterV_start ************\n");
     ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_tl_sharp_team_t          *team  = TASK_TEAM(task);
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
@@ -475,7 +475,7 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
 {
-    ucc_trace(stderr, "*********** sharp_reduce_scatter_init ************\n");
+    ucc_trace("*********** sharp_reduce_scatter_init ************\n");
     ucc_coll_args_t *args = &TASK_ARGS(task);
 
     if (!ucc_coll_args_is_predefined_dt(args, UCC_RANK_INVALID)) {
