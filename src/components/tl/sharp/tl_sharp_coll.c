@@ -334,6 +334,8 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     char *srcBufPtrInChar = (char *) args->src.info.buffer;
     char *dstBufPtrInChar = (char *) args->dst.info.buffer;
 
+    ret = SHARP_COLL_SUCCESS;
+
     for(int rankCnt = 0; rankCnt < size; rankCnt++){
 
         if(rank == 0)
