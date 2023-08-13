@@ -284,8 +284,12 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     size_t                        data_size;
     int                           ret;
 
-    //int              rank = (int)(coll_task->bargs.team->rank);
+    int              rank = (int)(coll_task->bargs.team->rank);
     int              size = (int)(coll_task->bargs.team->size);
+
+    //initialize sharp_req hands
+    void **sharp_reqs;
+    sharp_reqs = malloc(sizeof(void *)*size)
 
 
     UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task, "sharp_reduce_scatter_start", 0); // Not sure
@@ -326,7 +330,39 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
 
 
     ucc_info("***reduce datalen:%lu, ranksize:%d\n", reduce_spec.length, size);
-    ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle); // TODO: change it to reduce_scatter
+
+    char *srcBufPtrInChar = (char *) args->src.info.buffer;
+    char *dstBufPtrInChar = (char *) args->dst.info.buffer;
+
+    for(int rankCnt = 0; rankCnt < size; rankCnt++){
+
+        ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, sharp_reqs[i]); // TODO: change it to reduce_scatter
+
+        /*update src and dst ptr*/
+        srcBufPtrInChar += (count/size);
+        reduce_spec.sbuf_desc.buffer.ptr  = (void *)srcBufPtrInChar;
+
+        dstBufPtrInChar += (count/size);
+        reduce_spec.rbuf_desc.buffer.ptr = (void *)dstBufPtrInChar;
+
+        /*update root*/
+        reduce_spec.root += 1;
+
+    }
+
+    /*wait for all but first reduce to complete, and return the first of them to &task->req_handle, let later functions to test*/
+    /*all but first sharp_reqs will be deallocated by sharp_coll_req_wait*/
+    fot(int rankCnt = 1; rankCnt < size; rankCnt++){
+
+        ret = sharp_coll_req_wait(sharp_reqs[i]);
+        if(ret != SHARP_COLL_SUCCESS){
+            tl_error("reduce scatter fail at rank:%d\n", rank);
+            return UCC_ERR_LAST;
+        }
+
+    }
+
+    &task->req_handle = sharp_reqs[0];
 
     if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
         tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCE failed:%s",
