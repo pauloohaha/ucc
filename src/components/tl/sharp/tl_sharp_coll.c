@@ -354,9 +354,9 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     /*all but first sharp_reqs will be deallocated by sharp_coll_req_wait*/
     for(int rankCnt = 1; rankCnt < size; rankCnt++){
 
-        ret = sharp_coll_req_wait(sharp_reqs[i]);
+        ret = sharp_coll_req_wait(sharp_reqs[rankCnt]);
         if(ret != SHARP_COLL_SUCCESS){
-            tl_error("reduce scatter fail at rank:%d\n", rank);
+            tl_error(UCC_TASK_LIB(task), "reduce scatter fail at rank:%d\n", rank);
             return UCC_ERR_LAST;
         }
 
