@@ -324,7 +324,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     reduce_spec.root                        = 0;
     reduce_spec.op                          = op_type;
 
-    ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle); // TODO: change it to reduce_scatter
+    ret = sharp_coll_do_reduce(team->sharp_comm, &reduce_spec); // TODO: change it to reduce_scatter
 
     if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
         tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCE failed:%s",
@@ -332,9 +332,12 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
         coll_task->status = ucc_tl_sharp_status_to_ucc(ret);
         return ucc_task_complete(coll_task);
     }
-    coll_task->status = UCC_INPROGRESS;
+    
+    //coll_task->status = UCC_INPROGRESS;
+    coll_task->status = UCC_OK;
 
-    return ucc_progress_queue_enqueue(UCC_TL_CORE_CTX(team)->pq, &task->super);
+    //return ucc_progress_queue_enqueue(UCC_TL_CORE_CTX(team)->pq, &task->super);
+    return UCC_OK;
 }
 /*
 ucc_status_t ucc_tl_sharp_reduce_scatterv_start(ucc_coll_task_t *coll_task)
