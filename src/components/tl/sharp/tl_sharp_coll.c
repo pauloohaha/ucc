@@ -359,10 +359,9 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
             tl_error(UCC_TASK_LIB(task), "reduce scatter fail at rank:%d\n", rank);
             return UCC_ERR_LAST;
         }
-
     }
 
-    &task->req_handle = sharp_reqs[0];
+    task->req_handle = sharp_reqs[0];
 
     if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
         tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCE failed:%s",
