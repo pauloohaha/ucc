@@ -324,6 +324,8 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     reduce_spec.root                        = 0;
     reduce_spec.op                          = op_type;
 
+
+    ucc_info("***reduce datalen:%d, ranksize:%d\n", reduce_spec.length, size);
     ret = sharp_coll_do_reduce(team->sharp_comm, &reduce_spec); // TODO: change it to reduce_scatter
 
     if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
