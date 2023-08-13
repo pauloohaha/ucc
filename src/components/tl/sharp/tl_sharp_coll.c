@@ -341,7 +341,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
         if(rank == 0)
             ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle); // TODO: change it to reduce_scatter
         else
-            ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, sharp_reqs[rankCnt]);
+            ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &sharp_reqs[rankCnt]);
 
         /*update src and dst ptr*/
         srcBufPtrInChar += (count/size);
