@@ -272,7 +272,7 @@ ucc_status_t ucc_tl_sharp_allreduce_start(ucc_coll_task_t *coll_task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
 {   
-    ucc_trace( "*********** sharp_reduce_scatter_start ************\n");
+    ucc_info( "*********** sharp_reduce_scatter_start ************\n");
     ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_tl_sharp_team_t          *team  = TASK_TEAM(task);
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
@@ -319,14 +319,14 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     reduce_spec.rbuf_desc.type              = SHARP_DATA_BUFFER;
     reduce_spec.rbuf_desc.mem_type          = ucc_to_sharp_memtype[args->dst.info.mem_type];
     reduce_spec.aggr_mode                   = SHARP_AGGREGATION_NONE;
-    reduce_spec.length                      = count;//reducce scatter 0
+    reduce_spec.length                      = (count/size);//reducce scatter 0
     reduce_spec.dtype                       = sharp_type;
     reduce_spec.root                        = 0;
     reduce_spec.op                          = op_type;
 
 
     ucc_info("***reduce datalen:%lu, ranksize:%d\n", reduce_spec.length, size);
-    ret = sharp_coll_do_reduce(team->sharp_comm, &reduce_spec); // TODO: change it to reduce_scatter
+    ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec); // TODO: change it to reduce_scatter
 
     if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
         tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCE failed:%s",
@@ -335,11 +335,11 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
         return ucc_task_complete(coll_task);
     }
     
-    //coll_task->status = UCC_INPROGRESS;
-    coll_task->status = UCC_OK;
+    coll_task->status = UCC_INPROGRESS;
+    //coll_task->status = UCC_OK;
 
-    //return ucc_progress_queue_enqueue(UCC_TL_CORE_CTX(team)->pq, &task->super);
-    return UCC_OK;
+    return ucc_progress_queue_enqueue(UCC_TL_CORE_CTX(team)->pq, &task->super);
+    //return UCC_OK;
 }
 /*
 ucc_status_t ucc_tl_sharp_reduce_scatterv_start(ucc_coll_task_t *coll_task)
@@ -481,7 +481,7 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
 {
-    ucc_trace("*********** sharp_reduce_scatter_init ************\n");
+    ucc_info("*********** sharp_reduce_scatter_init ************\n");
     ucc_coll_args_t *args = &TASK_ARGS(task);
 
     if (!ucc_coll_args_is_predefined_dt(args, UCC_RANK_INVALID)) {
