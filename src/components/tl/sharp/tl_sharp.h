@@ -6,6 +6,7 @@
 
  /*
  MOD: UCC_COLL_TYPE_REDUCE_SCATTER added line 139 by piao
+ change to UCC_COLL_TYPE_REDUCE_SCATTERV
  */
 
 #ifndef UCC_TL_SHARP_H_

@@ -6,6 +6,7 @@
  /*
  TODO:
  ucc_tl_rccl_reduce_scatter_init added at line 26 by piao
+ change to ucc_tl_sharp_reduce_scatterv_init by piao
 
  */
 
@@ -23,7 +24,7 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task);
 
 ucc_status_t ucc_tl_sharp_barrier_init(ucc_tl_sharp_task_t *task);
 
-ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task);
+ucc_status_t ucc_tl_sharp_reduce_scatterv_init(ucc_tl_sharp_task_t *task);
 
 ucc_status_t ucc_tl_sharp_bcast_init(ucc_tl_sharp_task_t *task);
 
