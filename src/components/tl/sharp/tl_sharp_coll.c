@@ -298,6 +298,9 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     op_type    = ucc_to_sharp_reduce_op[args->op];
     data_size  = ucc_dt_size(dt) * count;
 
+    /*offset for each scatter*/
+    long long offset = ((long long) data_size)/size;
+
     if (!UCC_IS_INPLACE(*args)) {
         ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->src.info.buffer,data_size,
                                   &task->allreduce.s_mem_h);
@@ -344,10 +347,10 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
             ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &sharp_reqs[rankCnt]);
 
         /*update src and dst ptr*/
-        srcBufPtrInChar += (count/size);
+        srcBufPtrInChar += offset;
         reduce_spec.sbuf_desc.buffer.ptr  = (void *)srcBufPtrInChar;
 
-        dstBufPtrInChar += (count/size);
+        dstBufPtrInChar += offset;
         reduce_spec.rbuf_desc.buffer.ptr = (void *)dstBufPtrInChar;
 
         /*update root*/
