@@ -241,7 +241,7 @@ ucc_status_t ucc_tl_sharp_coll_init(ucc_base_coll_args_t *coll_args,
         tl_debug(UCC_TASK_LIB(task), "initing bcast coll task %p", task);
         status = ucc_tl_sharp_bcast_init(task);
         break;
-    case UCC_COLL_TYPE_REDUCE_SCATTER:
+    case UCC_COLL_TYPE_REDUCE_SCATTERV:
         tl_debug(UCC_TASK_LIB(task), "initing reduce scatter coll task %p", task);
         status = ucc_tl_sharp_reduce_scatter_init(task);
         break;
