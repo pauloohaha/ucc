@@ -160,42 +160,55 @@ ucc_status_t ucc_tl_ucp_coll_init(ucc_base_coll_args_t *coll_args,
 
     switch (coll_args->args.coll_type) {
     case UCC_COLL_TYPE_BARRIER:
+        tl_debug(UCC_TASK_LIB(task), "initing barrier coll task %p", task);
         status = ucc_tl_ucp_barrier_init(task);
         break;
     case UCC_COLL_TYPE_ALLTOALL:
+        tl_debug(UCC_TASK_LIB(task), "initing alltoall coll task %p", task);
         status = ucc_tl_ucp_alltoall_init(task);
         break;
     case UCC_COLL_TYPE_ALLTOALLV:
+        tl_debug(UCC_TASK_LIB(task), "initing alltolallv coll task %p", task);
         status = ucc_tl_ucp_alltoallv_init(task);
         break;
     case UCC_COLL_TYPE_ALLREDUCE:
+        tl_debug(UCC_TASK_LIB(task), "initing allreduce coll task %p", task);
         status = ucc_tl_ucp_allreduce_init(task);
         break;
     case UCC_COLL_TYPE_ALLGATHER:
+        tl_debug(UCC_TASK_LIB(task), "initing allgather coll task %p", task);
         status = ucc_tl_ucp_allgather_init(task);
         break;
     case UCC_COLL_TYPE_ALLGATHERV:
+        tl_debug(UCC_TASK_LIB(task), "initing allgatherv coll task %p", task);
         status = ucc_tl_ucp_allgatherv_init(task);
         break;
     case UCC_COLL_TYPE_BCAST:
+        tl_debug(UCC_TASK_LIB(task), "initing bcast coll task %p", task);
         status = ucc_tl_ucp_bcast_init(task);
         break;
     case UCC_COLL_TYPE_REDUCE:
+        tl_debug(UCC_TASK_LIB(task), "initing reduce coll task %p", task);
         status = ucc_tl_ucp_reduce_init(task);
         break;
     case UCC_COLL_TYPE_GATHER:
+        tl_debug(UCC_TASK_LIB(task), "initing gather coll task %p", task);
         status = ucc_tl_ucp_gather_init(task);
         break;
     case UCC_COLL_TYPE_FANIN:
+        tl_debug(UCC_TASK_LIB(task), "initing fanin coll task %p", task);
         status = ucc_tl_ucp_fanin_init(task);
         break;
     case UCC_COLL_TYPE_FANOUT:
+        tl_debug(UCC_TASK_LIB(task), "initing fanout coll task %p", task);
         status = ucc_tl_ucp_fanout_init(task);
         break;
     case UCC_COLL_TYPE_SCATTERV:
+        tl_debug(UCC_TASK_LIB(task), "initing scatterv coll task %p", task);
         status = ucc_tl_ucp_scatterv_init(task);
         break;
     case UCC_COLL_TYPE_GATHERV:
+        tl_debug(UCC_TASK_LIB(task), "initing gatherv coll task %p", task);
         status = ucc_tl_ucp_gatherv_init(task);
         break;
     default:
