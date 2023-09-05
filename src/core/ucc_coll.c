@@ -168,9 +168,6 @@ UCC_CORE_PROFILE_FUNC(ucc_status_t, ucc_collective_init,
     ucc_memory_type_t         coll_mem_type;
     ucc_ee_type_t             coll_ee_type;
 
-    ucc_trace("****ucc coll init****\n");
-    ucc_trace("****coll type:%d, op:%d ****\n", coll_args->coll_type, coll_args->op);
-
     if (ucc_unlikely(team->state != UCC_TEAM_ACTIVE)) {
         ucc_error("team %p is used before team create is completed", team);
         return UCC_ERR_INVALID_PARAM;

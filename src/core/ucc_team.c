@@ -424,7 +424,6 @@ ucc_status_t ucc_team_create_test_single(ucc_context_t *context,
         team->state = UCC_TEAM_SERVICE_TEAM;
         /* fall through */
     case UCC_TEAM_SERVICE_TEAM:
-        printf("***UCC_TEAM_SERVICE_TEAM***\n");
         if ((context->cl_flags & UCC_BASE_LIB_FLAG_SERVICE_TEAM_REQUIRED) ||
             ((context->cl_flags & UCC_BASE_LIB_FLAG_TEAM_ID_REQUIRED) &&
              (team->id == 0))) {

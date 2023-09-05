@@ -4,10 +4,6 @@
  * See file LICENSE for terms.
  */
 
- /*
-add case UCC_COLL_TYPE_REDUCE_SCATTER at ucc_tl_sharp_coll_init at line 242 by piao
- */
-
 #include "tl_sharp_coll.h"
 #include "components/mc/ucc_mc.h"
 #include "core/ucc_ee.h"

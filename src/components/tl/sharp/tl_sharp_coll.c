@@ -3,11 +3,7 @@
  *
  * See file LICENSE for terms.
  */
- /*
- ucc_tl_sharp_reduce_scatter_start
- ucc_tl_sharp_reduce_scatter_init
- 
- */
+
 
 #include "tl_sharp_coll.h"
 #include "components/mc/ucc_mc.h"

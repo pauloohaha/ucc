@@ -3,9 +3,7 @@
  *
  * See file LICENSE for terms.
  */
- /*
- ucc_tl_sharp_reduce_scatter_init added at line 26 by piao
- */
+
 
 #ifndef UCC_TL_SHARP_COLL_H_
 #define UCC_TL_SHARP_COLL_H_

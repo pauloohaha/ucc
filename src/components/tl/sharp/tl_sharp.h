@@ -4,9 +4,6 @@
  * See file LICENSE for terms.
  */
 
- /*
- MOD: UCC_COLL_TYPE_REDUCE_SCATTER added line 139 by piao
- */
 
 #ifndef UCC_TL_SHARP_H_
 #define UCC_TL_SHARP_H_

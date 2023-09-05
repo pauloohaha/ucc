@@ -80,7 +80,6 @@ coll_score_add_range(ucc_coll_score_t *score, ucc_coll_type_t coll_type,
         ucc_msg_range_free(r);
         return UCC_ERR_INVALID_PARAM;
     }
-
     return UCC_OK;
 }
 ucc_status_t ucc_coll_score_add_range(ucc_coll_score_t *score,

@@ -6,7 +6,6 @@
  * See file LICENSE for terms.
  */
 
-
 #include "tl_rccl_coll.h"
 #include "components/mc/ucc_mc.h"
 #include "components/ec/ucc_ec.h"
