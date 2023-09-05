@@ -268,7 +268,6 @@ ucc_status_t ucc_tl_sharp_allreduce_start(ucc_coll_task_t *coll_task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
 {   
-    ucc_info( "*********** sharp_reduce_scatter_start ************\n");
     ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_tl_sharp_team_t          *team  = TASK_TEAM(task);
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
@@ -327,8 +326,6 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     reduce_spec.root                        = 0;
     reduce_spec.op                          = op_type;
 
-
-    ucc_info("***reduce datalen:%lu, ranksize:%d\n", reduce_spec.length, size);
 
     char *srcBufPtrInChar = (char *) args->src.info.buffer;
     char *dstBufPtrInChar = (char *) args->dst.info.buffer;
