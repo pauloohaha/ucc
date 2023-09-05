@@ -4,7 +4,6 @@
  * See file LICENSE for terms.
  */
 
-
 #ifndef UCC_TL_SHARP_COLL_H_
 #define UCC_TL_SHARP_COLL_H_
 
