@@ -280,7 +280,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
     size_t                        data_size;
     int                           ret;
 
-    int              rank = (int)(coll_task->bargs.team->rank);
+    //int              rank = (int)(coll_task->bargs.team->rank);
     int              size = (int)(coll_task->bargs.team->size);
 
     //initialize sharp_req hands
