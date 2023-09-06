@@ -329,7 +329,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_start(ucc_coll_task_t *coll_task)
 
     ret = SHARP_COLL_SUCCESS;
 
-    if(data_size/size > 16*1024){
+    if(data_size/size >= 16*1024){
         //use reduce non blocking
 
         ucc_info("***reduce nb datalen:%lu, ranksize:%d\n", reduce_spec.length, size);
