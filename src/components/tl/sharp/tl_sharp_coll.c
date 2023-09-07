@@ -349,7 +349,7 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
 
     }else{
         
-        return UCC_ERR_NOT_SUPPORTED;
+        return;
 
     }
 }
@@ -622,7 +622,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
     size_t                        count = args->dst.info.count;
     ucc_datatype_t                dt    = args->dst.info.datatype;
     size_t                        data_size;
-    int size = (int)(coll_task->bargs.team->size);
+    int size = (int)(coll_task.bargs.team->size);
 
     data_size  = ucc_dt_size(dt) * count / size;
 
