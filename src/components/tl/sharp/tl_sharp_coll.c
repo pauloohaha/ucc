@@ -314,6 +314,7 @@ ucc_status_t ucc_tl_sharp_allreduce_start(ucc_coll_task_t *coll_task)
 
 void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_task)
 {
+    tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter nr progress %p", task);
     ucc_tl_sharp_task_t *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
     size_t                        count = args->dst.info.count;
@@ -355,6 +356,7 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
 {   
+    tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter nr start %p", task);
     ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_tl_sharp_team_t          *team  = TASK_TEAM(task);
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
@@ -460,6 +462,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
 */
 ucc_status_t ucc_tl_sharp_reduce_scatter_arw_start(ucc_coll_task_t *coll_task)
 {
+    tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter arw start %p", task);
     ucc_tl_sharp_task_t          *task   = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_tl_sharp_team_t          *team   = TASK_TEAM(task);
     ucc_coll_args_t              *args   = &TASK_ARGS(task);
@@ -613,6 +616,7 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
 {
+    tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter init %p", task);
     ucc_coll_args_t *args = &TASK_ARGS(task);
     ucc_coll_task_t coll_task = task->super;
     size_t                        count = args->dst.info.count;
