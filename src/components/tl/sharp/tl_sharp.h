@@ -4,14 +4,10 @@
  * See file LICENSE for terms.
  */
 
- /*
- MOD: UCC_COLL_TYPE_REDUCE_SCATTER added line 139 by piao
- UCC_COLL_TYPE_REDUCE_SCATTERV
- */
-
 #ifndef UCC_TL_SHARP_H_
 #define UCC_TL_SHARP_H_
 
+#include "components/mc/base/ucc_mc_base.h"
 #include "components/tl/ucc_tl.h"
 #include "components/tl/ucc_tl_log.h"
 #include "utils/ucc_mpool.h"
@@ -116,6 +112,13 @@ typedef struct ucc_tl_sharp_task {
         struct {
             ucc_tl_sharp_reg_t *mem_h;
         } bcast;
+        struct {
+            ucc_tl_sharp_reg_t     *s_mem_h;
+            ucc_tl_sharp_reg_t     *r_mem_h;
+            ucc_mc_buffer_header_t *scratch_mc_header;
+            void                   *scratch;
+            void                  **reqs;
+        } reduce_scatter;
     };
 } ucc_tl_sharp_task_t;
 
