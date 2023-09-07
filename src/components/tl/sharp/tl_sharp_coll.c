@@ -160,7 +160,16 @@ ucc_tl_sharp_mem_deregister(ucc_tl_sharp_team_t *team, ucc_tl_sharp_reg_t *reg)
 
 void ucc_tl_sharp_collective_progress(ucc_coll_task_t *coll_task)
 {
-    ucc_tl_sharp_task_t *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
+    ucc_status_t         status  = UCC_OK;
+    ucc_tl_sharp_task_t *task    = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
+    ucc_rank_t           rank    = task->super.team->params.rank;
+    ucc_rank_t           size    = task->super.team->params.size;
+    ucc_rank_t           root    = task->super.bargs.args.root;
+    ucc_count_t          rcount  = task->super.bargs.args.dst.info.count;
+    ucc_datatype_t       dt      = task->super.bargs.args.dst.info.datatype;
+    void                *dst_buf = task->super.bargs.args.dst.info.buffer;
+    void                *src_buf;
+    size_t               rdata_size;
     int completed;
 
     if (task->req_handle != NULL) {
