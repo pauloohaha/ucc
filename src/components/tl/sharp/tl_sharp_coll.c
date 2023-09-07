@@ -164,7 +164,6 @@ void ucc_tl_sharp_collective_progress(ucc_coll_task_t *coll_task)
     ucc_tl_sharp_task_t *task    = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_rank_t           rank    = task->super.team->params.rank;
     ucc_rank_t           size    = task->super.team->params.size;
-    ucc_rank_t           root    = task->super.bargs.args.root;
     ucc_count_t          rcount  = task->super.bargs.args.dst.info.count;
     ucc_datatype_t       dt      = task->super.bargs.args.dst.info.datatype;
     void                *dst_buf = task->super.bargs.args.dst.info.buffer;
@@ -632,6 +631,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
 {
     ucc_info("*********** sharp_reduce_scatter_init ************\n");
     ucc_coll_args_t *args = &TASK_ARGS(task);
+    ucc_coll_task_t coll_task = task->super;
     size_t                        count = args->dst.info.count;
     ucc_datatype_t                dt    = args->dst.info.datatype;
     size_t                        data_size;
