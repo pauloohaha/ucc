@@ -326,7 +326,7 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
 
     if(data_size >= 16*1024){
         //multiple reduce nb
-        void ** request_list = (void **)task->req_handle;
+        void ** request_list = (void **)task->reduce_scatter.reqs;
         for(int i = 0; i < size; i++){
 
             //check i th reduce_nb request
@@ -347,24 +347,14 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
                                             "sharp_collective_done", 0);
 
     }else{
-        //use allreduce nb
-        if (task->req_handle != NULL) {
-            completed = sharp_coll_req_test(task->req_handle);
-            if (completed) {
-
-                sharp_coll_req_free(task->req_handle);
-                coll_task->status = UCC_OK;
-                UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task,
-                                                "sharp_collective_done", 0);
-            }
-        }
+        
+        return UCC_ERR_NOT_SUPPORTED;
 
     }
 }
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
 {   
-    ucc_info( "*********** sharp_reduce_scatter_start ************\n");
     ucc_tl_sharp_task_t          *task  = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_tl_sharp_team_t          *team  = TASK_TEAM(task);
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
@@ -427,8 +417,6 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
 
     if(data_size/size >= 16*1024){
         //use reduce non blocking
-
-        ucc_info("***reduce nb datalen:%lu, ranksize:%d\n", reduce_spec.length, size);
         char *srcBufPtrInChar = (char *) args->src.info.buffer;
         char *dstBufPtrInChar = (char *) args->dst.info.buffer;
 
@@ -449,13 +437,9 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         }
 
         //give the pointer of requestes list for later test
-        task->req_handle = (void *)sharp_reqs;
+        task->reduce_scatter.reqs = (void *)sharp_reqs;
     }else{
-        //use allreduce
-        reduce_spec.length                      = count;//reducce scatter 0
-
-        ucc_info("***allreduce nb datalen:%lu, ranksize:%d\n", reduce_spec.length, size);
-        ret = sharp_coll_do_allreduce_nb(team->sharp_comm, &reduce_spec, &task->req_handle);
+        return UCC_ERR_NOT_SUPPORTED;
 
     }
 
@@ -629,7 +613,6 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
 {
-    ucc_info("*********** sharp_reduce_scatter_init ************\n");
     ucc_coll_args_t *args = &TASK_ARGS(task);
     ucc_coll_task_t coll_task = task->super;
     size_t                        count = args->dst.info.count;
