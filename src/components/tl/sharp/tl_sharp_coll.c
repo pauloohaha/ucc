@@ -365,7 +365,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     ucc_tl_sharp_context_t       *ctx    = ucc_derived_of(task->super.team->context, 
                                                 ucc_tl_sharp_context_t);
     ucc_status_t                  status = UCC_OK;
-    int                           rank   = (int)(coll_task->bargs.team->rank);
+    // int                           rank   = (int)(coll_task->bargs.team->rank);
     int                           size   = (int)(coll_task->bargs.team->size);
 
     struct sharp_coll_reduce_spec reduce_spec;
@@ -392,7 +392,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     if (!UCC_IS_INPLACE(*args)) {
         reduce_count     = count;
         reduce_data_size = ucc_dt_size(dt) * reduce_count;
-        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->src.info.buffer, reduce_data_size,
+        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->src.info.buffer, reduce_data_size*size,
                                   &task->reduce_scatter.s_mem_h);
     } else {
         reduce_count     = count / size;
@@ -443,10 +443,10 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         //use reduce non blocking
         char *srcBufPtrInChar = (char *) args->src.info.buffer;
 
-        for(int rankCnt = 0; rankCnt < 2; rankCnt++){
-            if (!rank) {
-                printf("post no.%d reduce\n", rankCnt);
-            }
+        for(int rankCnt = 0; rankCnt < size; rankCnt++){
+            // if (!rank) {
+            //     printf("post no.%d reduce\n", rankCnt);
+            // }
             ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &sharp_reqs[rankCnt]);
             if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
                 tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCENB failed in no.%d reduce",
