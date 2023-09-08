@@ -435,7 +435,11 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         for(int rankCnt = 0; rankCnt < size; rankCnt++){
 
             ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &sharp_reqs[rankCnt]);
-
+            if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
+                tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCENB failed in no.%d reduce",
+                    rankCnt);
+                break;
+            }
             /*update src and dst ptr*/
             srcBufPtrInChar += reduce_data_size;
             reduce_spec.sbuf_desc.buffer.ptr  = (void *)srcBufPtrInChar;
