@@ -432,7 +432,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         //use reduce non blocking
         char *srcBufPtrInChar = (char *) args->src.info.buffer;
 
-        for(int rankCnt = 0; rankCnt < 1; rankCnt++){
+        for(int rankCnt = 0; rankCnt < 2; rankCnt++){
             if (!rank) {
                 printf("post no.%d reduce\n", rankCnt);
             }
