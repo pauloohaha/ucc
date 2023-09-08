@@ -372,7 +372,6 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     enum sharp_reduce_op          op_type;
     size_t                        reduce_count;
     size_t                        reduce_data_size;
-    size_t                        offset;
     int                           ret;
 
     tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter nr start %p", task);
@@ -414,7 +413,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         reduce_spec.sbuf_desc.mem_type          = ucc_to_sharp_memtype[args->dst.info.mem_type];
     }
 
-    reduce_spec.sbuf_desc.buffer.length     = data_size;
+    reduce_spec.sbuf_desc.buffer.length     = reduce_data_size;
     reduce_spec.sbuf_desc.type              = SHARP_DATA_BUFFER;
     reduce_spec.rbuf_desc.buffer.ptr        = args->dst.info.buffer;
     reduce_spec.rbuf_desc.buffer.length     = reduce_data_size;
@@ -432,7 +431,6 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     if(reduce_data_size >= ctx->cfg.rs_switch_thersh){
         //use reduce non blocking
         char *srcBufPtrInChar = (char *) args->src.info.buffer;
-        char *dstBufPtrInChar = (char *) args->dst.info.buffer;
 
         for(int rankCnt = 0; rankCnt < size; rankCnt++){
 
