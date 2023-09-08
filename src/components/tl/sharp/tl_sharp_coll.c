@@ -320,33 +320,44 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
     ucc_datatype_t                dt    = args->dst.info.datatype;
     size_t                        data_size;
     int completed;
+    int allcompleted;
     int size = (int)(coll_task->bargs.team->size);
 
     tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter nr progress %p", task);
 
     data_size  = ucc_dt_size(dt) * count / size;
 
+    allcompleted = 1;
+
     if(data_size >= 16*1024){
         //multiple reduce nb
         void ** request_list = (void **)task->reduce_scatter.reqs;
+
         for(int i = 0; i < size; i++){
 
             //check i th reduce_nb request
-            completed = sharp_coll_req_test(request_list[i]);
-            if(completed)
+            if(request_list[i]) != NULL){
+                completed = sharp_coll_req_test(request_list[i]);
+                if(completed){
+                    sharp_coll_req_free(request_list[i]);
+                    request_list[i]=NULL;
+                }
+                else{
+                    allcompleted = 0;//one is not completed, make the flag
+                }
+            }else{
+                //i th request already completed
                 continue;
-            else
-                return;//one is not completed, return immediately
+            }
 
         }
-        
-        for(int i = 0; i < size; i++){//free all requests
-            sharp_coll_req_free(request_list[i]);
-        }
 
-        coll_task->status = UCC_OK;
-        UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task,
-                                            "sharp_collective_done", 0);
+        if(allcompleted){
+            //all requests are completed
+            coll_task->status = UCC_OK;
+            UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task,
+                                                "sharp_collective_done", 0);
+        }
 
     }else{
         
