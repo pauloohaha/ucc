@@ -364,9 +364,8 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     ucc_datatype_t                dt     = args->dst.info.datatype;
     ucc_tl_sharp_context_t       *ctx    = ucc_derived_of(task->super.team->context, 
                                                 ucc_tl_sharp_context_t);
-    // ucc_status_t                  status = UCC_OK;
-    // int                           rank   = (int)(coll_task->bargs.team->rank);
-    int                           size   = (int)(coll_task->bargs.team->size);
+    // int                           rank   = coll_task->bargs.team->rank;
+    int                           size   = coll_task->bargs.team->size;
 
     struct sharp_coll_reduce_spec reduce_spec;
     enum sharp_datatype           sharp_type;
@@ -402,19 +401,6 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->dst.info.buffer, reduce_data_size,
                                   &task->reduce_scatter.r_mem_h);
     }
-    // status = ucc_mc_alloc(&task->reduce_scatter.scratch_mc_header,
-    //                       reduce_data_size,
-    //                       args->dst.info.mem_type);
-    // task->reduce_scatter.scratch = task->reduce_scatter.scratch_mc_header->addr;
-    // ucc_tl_sharp_mem_register(TASK_CTX(task), team, task->reduce_scatter.scratch, 
-    //                           reduce_data_size,
-    //                           &task->reduce_scatter.r_mem_h);
-    // if (ucc_unlikely(UCC_OK != status)) {
-    //     tl_error(team->super.super.context->lib,
-    //             "failed to allocate %zd bytes for reduce-scatter nr reduce_buf",
-    //             reduce_data_size);
-    //     return status;
-    // }    
 
     if (!UCC_IS_INPLACE(*args)) {
         reduce_spec.sbuf_desc.buffer.ptr        = args->src.info.buffer;
@@ -445,10 +431,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         //use reduce non blocking
         char *srcBufPtrInChar = (char *) args->src.info.buffer;
 
-        for(int rankCnt = 0; rankCnt < size; rankCnt++){
-            // if (!rank) {
-            //     printf("post no.%d reduce\n", rankCnt);
-            // }
+        for(int rankCnt = 0; rankCnt < size; rankCnt++) {
             ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &sharp_reqs[rankCnt]);
             if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
                 tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCENB failed in no.%d reduce",
