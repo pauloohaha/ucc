@@ -317,7 +317,7 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
     ucc_tl_sharp_task_t *task = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
     ucc_coll_args_t     *args = &TASK_ARGS(task);
     ucc_datatype_t       dt   = args->dst.info.datatype;
-    int                  rank = coll_task->team->params.rank
+    int                  rank = coll_task->team->params.rank;
 
     size_t reduce_count     = args->dst.info.count;
     size_t reduce_data_size = ucc_dt_size(dt) * reduce_count;
