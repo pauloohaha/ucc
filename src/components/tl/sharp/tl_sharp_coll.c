@@ -364,7 +364,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     ucc_datatype_t                dt    = args->dst.info.datatype;
     ucc_tl_sharp_context_t       *ctx   = ucc_derived_of(task->super.team->context, 
                                                 ucc_tl_sharp_context_t);
-    // int                           rank  = (int)(coll_task->bargs.team->rank);
+    int                           rank  = (int)(coll_task->bargs.team->rank);
     int                           size  = (int)(coll_task->bargs.team->size);
 
     struct sharp_coll_reduce_spec reduce_spec;
@@ -433,7 +433,9 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         char *srcBufPtrInChar = (char *) args->src.info.buffer;
 
         for(int rankCnt = 0; rankCnt < size; rankCnt++){
-
+            if (!rank) {
+                printf("post no.%d reduce\n", rankCnt);
+            }
             ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &sharp_reqs[rankCnt]);
             if (ucc_unlikely(ret != SHARP_COLL_SUCCESS)) {
                 tl_error(UCC_TASK_LIB(task), "reduce scatter REDUCENB failed in no.%d reduce",
