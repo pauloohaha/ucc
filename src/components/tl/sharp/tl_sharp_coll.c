@@ -364,7 +364,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     ucc_datatype_t                dt     = args->dst.info.datatype;
     ucc_tl_sharp_context_t       *ctx    = ucc_derived_of(task->super.team->context, 
                                                 ucc_tl_sharp_context_t);
-    ucc_status_t                  status = UCC_OK;
+    // ucc_status_t                  status = UCC_OK;
     // int                           rank   = (int)(coll_task->bargs.team->rank);
     int                           size   = (int)(coll_task->bargs.team->size);
 
