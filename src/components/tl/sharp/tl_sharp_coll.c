@@ -362,16 +362,21 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     ucc_coll_args_t              *args  = &TASK_ARGS(task);
     size_t                        count = args->dst.info.count;
     ucc_datatype_t                dt    = args->dst.info.datatype;
+    ucc_tl_sharp_context_t       *ctx   = ucc_derived_of(task->super.team->context, 
+                                                ucc_tl_sharp_context_t);
+    // int                           rank  = (int)(coll_task->bargs.team->rank);
+    int                           size  = (int)(coll_task->bargs.team->size);
+
     struct sharp_coll_reduce_spec reduce_spec;
     enum sharp_datatype           sharp_type;
     enum sharp_reduce_op          op_type;
-    size_t                        data_size;
+    size_t                        reduce_count;
+    size_t                        reduce_data_size;
+    size_t                        offset;
     int                           ret;
 
     tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter nr start %p", task);
 
-    //int              rank = (int)(coll_task->bargs.team->rank);
-    int              size = (int)(coll_task->bargs.team->size);
 
     //initialize sharp_req hands
     void **sharp_reqs;
@@ -380,19 +385,24 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
 
     UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task, "sharp_reduce_scatter_start", 0); // Not sure
 
-    sharp_type = ucc_to_sharp_dtype[UCC_DT_PREDEFINED_ID(dt)];
-    op_type    = ucc_to_sharp_reduce_op[args->op];
-    data_size  = ucc_dt_size(dt) * count;
-
-    /*offset for each scatter*/
-    long long offset = ((long long) data_size)/size;
+    sharp_type        = ucc_to_sharp_dtype[UCC_DT_PREDEFINED_ID(dt)];
+    op_type           = ucc_to_sharp_reduce_op[args->op];
+    reduce_data_size  = ucc_dt_size(dt) * count;
 
     if (!UCC_IS_INPLACE(*args)) {
-        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->src.info.buffer,data_size,
+        reduce_count     = count;
+        reduce_data_size = ucc_dt_size(dt) * reduce_count;
+        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->src.info.buffer, reduce_data_size,
                                   &task->reduce_scatter.s_mem_h);
+        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->dst.info.buffer, reduce_data_size,
+                                  &task->reduce_scatter.r_mem_h);
+    } else {
+        reduce_count     = count / size;
+        reduce_data_size = ucc_dt_size(dt) * reduce_count;
+        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->dst.info.buffer, reduce_data_size,
+                                  &task->reduce_scatter.r_mem_h);
     }
-    ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->dst.info.buffer, data_size,
-                              &task->reduce_scatter.r_mem_h);
+    
 
     if (!UCC_IS_INPLACE(*args)) {
         reduce_spec.sbuf_desc.buffer.ptr        = args->src.info.buffer;
@@ -407,19 +417,19 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     reduce_spec.sbuf_desc.buffer.length     = data_size;
     reduce_spec.sbuf_desc.type              = SHARP_DATA_BUFFER;
     reduce_spec.rbuf_desc.buffer.ptr        = args->dst.info.buffer;
-    reduce_spec.rbuf_desc.buffer.length     = data_size;
+    reduce_spec.rbuf_desc.buffer.length     = reduce_data_size;
     reduce_spec.rbuf_desc.buffer.mem_handle = task->reduce_scatter.r_mem_h->mr;
     reduce_spec.rbuf_desc.type              = SHARP_DATA_BUFFER;
     reduce_spec.rbuf_desc.mem_type          = ucc_to_sharp_memtype[args->dst.info.mem_type];
     reduce_spec.aggr_mode                   = SHARP_AGGREGATION_NONE;
-    reduce_spec.length                      = (count/size);//reducce scatter 0
+    reduce_spec.length                      = reduce_count;//reducce scatter 0
     reduce_spec.dtype                       = sharp_type;
     reduce_spec.root                        = 0;
     reduce_spec.op                          = op_type;
 
     ret = SHARP_COLL_SUCCESS;
 
-    if(data_size/size >= 16*1024){
+    if(reduce_data_size >= ctx->cfg.rs_switch_thersh){
         //use reduce non blocking
         char *srcBufPtrInChar = (char *) args->src.info.buffer;
         char *dstBufPtrInChar = (char *) args->dst.info.buffer;
@@ -429,11 +439,8 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
             ret = sharp_coll_do_reduce_nb(team->sharp_comm, &reduce_spec, &sharp_reqs[rankCnt]);
 
             /*update src and dst ptr*/
-            srcBufPtrInChar += offset;
+            srcBufPtrInChar += reduce_data_size;
             reduce_spec.sbuf_desc.buffer.ptr  = (void *)srcBufPtrInChar;
-
-            dstBufPtrInChar += offset;
-            reduce_spec.rbuf_desc.buffer.ptr = (void *)dstBufPtrInChar;
 
             /*update root*/
             reduce_spec.root += 1;
@@ -619,12 +626,13 @@ ucc_status_t ucc_tl_sharp_allreduce_init(ucc_tl_sharp_task_t *task)
 
 ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
 {
-    ucc_coll_args_t *args = &TASK_ARGS(task);
-    ucc_coll_task_t coll_task = task->super;
-    size_t                        count = args->dst.info.count;
-    ucc_datatype_t                dt    = args->dst.info.datatype;
-    size_t                        data_size;
-    int size = (int)(coll_task.bargs.team->size);
+    ucc_coll_args_t        *args      = &TASK_ARGS(task);
+    ucc_coll_task_t         coll_task = task->super;
+    size_t                  count     = args->dst.info.count;
+    ucc_datatype_t          dt        = args->dst.info.datatype;
+    ucc_tl_sharp_context_t *ctx       = ucc_derived_of(task->super.team->context, ucc_tl_sharp_context_t);
+    ucc_rank_t              size      = (int)(coll_task.bargs.team->size);
+    size_t                  data_size;
 
     tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter init %p", task);
 
@@ -642,7 +650,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_init(ucc_tl_sharp_task_t *task)
         return UCC_ERR_NOT_SUPPORTED;
     }
 
-    if(data_size >= 16*1024){
+    if(data_size >= ctx->cfg.rs_switch_thersh){
         task->super.post     = ucc_tl_sharp_reduce_scatter_nr_start;
         task->super.progress = ucc_tl_sharp_collective_scatter_reduce_nr_progress;
     }else{

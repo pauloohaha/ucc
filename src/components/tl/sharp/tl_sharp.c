@@ -71,6 +71,11 @@ static ucc_config_field_t ucc_tl_sharp_context_config_table[] = {
      ucc_offsetof(ucc_tl_sharp_context_config_t, team_max_ppn),
      UCC_CONFIG_TYPE_UINT},
 
+    {"RS_SWITCH_THERSH", "16384",
+     "SHARP reduce-scatter switch allreduce wrapped to n-reduce threshold",
+     ucc_offsetof(ucc_tl_sharp_context_config_t, rs_switch_thersh),
+     UCC_CONFIG_TYPE_MEMUNITS},
+
     {NULL}};
 
 UCC_CLASS_DEFINE_NEW_FUNC(ucc_tl_sharp_lib_t, ucc_base_lib_t,
