@@ -428,7 +428,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
 
     reduce_spec.sbuf_desc.buffer.length     = reduce_data_size;
     reduce_spec.sbuf_desc.type              = SHARP_DATA_BUFFER;
-    reduce_spec.rbuf_desc.buffer.ptr        = task->reduce_scatter.scratch;
+    reduce_spec.rbuf_desc.buffer.ptr        = args->dst.info.buffer;
     reduce_spec.rbuf_desc.buffer.length     = reduce_data_size;
     reduce_spec.rbuf_desc.buffer.mem_handle = task->reduce_scatter.r_mem_h->mr;
     reduce_spec.rbuf_desc.type              = SHARP_DATA_BUFFER;
