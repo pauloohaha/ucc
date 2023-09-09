@@ -392,9 +392,18 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     int                  is_inplace = UCC_IS_INPLACE(*args);
     int                  ret        = SHARP_COLL_SUCCESS;
 
+    struct sharp_coll_reduce_spec reduce_spec;
     size_t reduce_data_size     = ucc_dt_size(dt) * count;
     size_t reduce_count         = count;
-    struct sharp_coll_reduce_spec reduce_spec;
+
+    if (is_inplace) {
+        reduce_count /= size;
+        reduce_data_size /= size;
+    }
+    // check switch threshold here
+    // otherwise, we need to deregist buffer if we do this check after ucc_tl_sharp_mem_register
+    if (reduce_data_size < ctx->cfg.rs_switch_thersh) 
+        return UCC_ERR_NOT_SUPPORTED;
 
     tl_trace(UCC_TASK_LIB(task), "sharp reduce scatter nr start %p", task);
 
@@ -406,15 +415,6 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     }
 
     UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task, "sharp_reduce_scatter_start", 0); // Not sure
-
-    if (is_inplace) {
-        reduce_count /= size;
-        reduce_data_size /= size;
-    }
-    // check switch threshold here
-    // otherwise, we need to deregist buffer if we do this check after ucc_tl_sharp_mem_register
-    if (reduce_data_size < ctx->cfg.rs_switch_thersh) 
-        return UCC_ERR_NOT_SUPPORTED;
 
     if (!is_inplace) {
         ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->src.info.buffer, reduce_data_size * size,
