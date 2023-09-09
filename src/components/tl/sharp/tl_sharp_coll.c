@@ -333,6 +333,10 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
         reduce_data_size /= size;
     }
 
+    if (reduce_data_size < ctx->cfg.rs_switch_thersh) {
+        coll_task->status = UCC_ERR_NOT_SUPPORTED;
+        return;
+    }
     ucc_assert(reduce_data_size >= ctx->cfg.rs_switch_thersh);
     // multiple reduce nb
     void **request_list = (void **)task->reduce_scatter.reqs;
