@@ -314,11 +314,12 @@ ucc_status_t ucc_tl_sharp_allreduce_start(ucc_coll_task_t *coll_task)
 
 void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_task)
 {
-    ucc_tl_sharp_task_t *task = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
-    ucc_coll_args_t     *args = &TASK_ARGS(task);
-    ucc_datatype_t       dt   = args->dst.info.datatype;
-    int                  rank = coll_task->team->params.rank
-
+    ucc_tl_sharp_task_t    *task = ucc_derived_of(coll_task, ucc_tl_sharp_task_t);
+    ucc_coll_args_t        *args = &TASK_ARGS(task);
+    ucc_datatype_t          dt   = args->dst.info.datatype;
+    int                     rank = coll_task->team->params.rank;
+    ucc_tl_sharp_context_t *ctx  = ucc_derived_of(task->super.team->context, 
+                                                ucc_tl_sharp_context_t);
     size_t reduce_count     = args->dst.info.count;
     size_t reduce_data_size = ucc_dt_size(dt) * reduce_count;
     int    size             = (int)(coll_task->bargs.team->size);
@@ -332,7 +333,7 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
         reduce_data_size /= size;
     }
 
-    if (reduce_data_size >= 16 * 1024) {
+    if (reduce_data_size >= ctx->cfg.rs_switch_thersh) {
         // multiple reduce nb
         void ** request_list = (void **)task->reduce_scatter.reqs;
         for (int i = 0; i < size; i++) {
@@ -348,7 +349,7 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
 
         if (is_inplace) {
             ucc_tl_sharp_mem_deregister(TASK_TEAM(task),
-                                task->allreduce.r_mem_h);
+                                task->reduce_scatter.r_mem_h);
 
             // move reduced data to buffer head
             char *dst_buf = (char *)args->dst.info.buffer;
@@ -365,9 +366,9 @@ void ucc_tl_sharp_collective_scatter_reduce_nr_progress(ucc_coll_task_t *coll_ta
             }
         } else {
             ucc_tl_sharp_mem_deregister(TASK_TEAM(task),
-                                        task->allreduce.s_mem_h);
+                                        task->reduce_scatter.s_mem_h);
             ucc_tl_sharp_mem_deregister(TASK_TEAM(task),
-                                        task->allreduce.r_mem_h);
+                                        task->reduce_scatter.r_mem_h);
         }
         coll_task->status = UCC_OK;
         UCC_TL_SHARP_PROFILE_REQUEST_EVENT(coll_task,
@@ -412,7 +413,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
     }
     // check switch threshold here
     // otherwise, we need to deregist buffer if we do this check after ucc_tl_sharp_mem_register
-    if (reduce_data_size >= ctx->cfg.rs_switch_thersh) 
+    if (reduce_data_size < ctx->cfg.rs_switch_thersh) 
         return UCC_ERR_NOT_SUPPORTED;
 
     if (!is_inplace) {
@@ -421,7 +422,7 @@ ucc_status_t ucc_tl_sharp_reduce_scatter_nr_start(ucc_coll_task_t *coll_task)
         ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->dst.info.buffer, reduce_data_size,
                                   &task->reduce_scatter.r_mem_h);
     } else {
-        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->dst.info.buffer, reduce_data_size,
+        ucc_tl_sharp_mem_register(TASK_CTX(task), team, args->dst.info.buffer, reduce_data_size * size,
                                   &task->reduce_scatter.r_mem_h);
     }
 
