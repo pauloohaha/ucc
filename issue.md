@@ -6,7 +6,7 @@ We are three winner teams in the 11th RDMA Competition held by [HPC-AI Advisory 
 
 ## Implementation
 
-We implement a `sharp_coll_do_allreduce_nb` based reduce-scatter and a `sharp_coll_do_reduce_nb` based one. Since the `sharp_coll_do_reduce_nb` API of the SHARP can only support messages with size >= 16K. Thus, when the message size is small (total array size / number of nodes < 16K), the scatter-reduce is done based on the `sharp_coll_do_allreduce_nb` API of SHARP, when the message size is large (total array size / number of nodes >= 16K), the scatter-reduce is done based on the `sharp_coll_do_reduce_nb` API.
+We implement a `sharp_coll_do_allreduce_nb` based reduce-scatter and a `sharp_coll_do_reduce_nb` based one. Since the `sharp_coll_do_reduce_nb` API of the SHARP can only support messages with size >= 16K by default (this threshold can be configured). Thus, when the message size is small (total array size / number of nodes < 16K), the scatter-reduce is done based on the `sharp_coll_do_allreduce_nb` API of SHARP, when the message size is large (total array size / number of nodes >= 16K), the scatter-reduce is done based on the `sharp_coll_do_reduce_nb` API.
 
 
 ### Allreduce-Wrapped Reduce-Scatter
